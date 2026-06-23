@@ -135,8 +135,11 @@ def _run_download(job_id: str, url: str, format_spec: str, is_audio: bool,
         "quiet": True,
         "no_warnings": True,
         "progress_hooks": [hook],
-        # Same extractor client in both /info and here = consistent formats
-        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["web_creator", "android"],
+            }
+        },
         **cookie_opts,
     }
 
@@ -221,10 +224,15 @@ def info():
         "no_warnings": True,
         "noplaylist": True,
         "skip_download": True,
-        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
-
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["web_creator", "android"],
+            }
+        },
         **cookie_opts,
     }
+
+
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
