@@ -137,6 +137,7 @@ def _run_download(job_id: str, url: str, format_spec: str, is_audio: bool,
         "progress_hooks": [hook],
         # Same extractor client in both /info and here = consistent formats
         "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+        **cookie_opts,
     }
 
     if is_audio:
@@ -152,6 +153,7 @@ def _run_download(job_id: str, url: str, format_spec: str, is_audio: bool,
                 "merger": ["-c:v", "copy", "-c:a", "aac", "-b:a", "192k"],
             },
         })
+
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -271,22 +273,26 @@ def stream():
             yield _sse({"type": "error", "message": "Enter a valid URL starting with http:// or https://"})
         return Response(bad(), mimetype="text/event-stream")
 
-    # Build format spec from quality params, not format_id
+
     if is_audio:
         if abr:
-            # best audio at or below requested bitrate
             format_spec = "bestaudio[abr<={}]/bestaudio/best".format(abr)
         else:
             format_spec = "bestaudio/best"
     else:
         if height:
-            # best video at or below requested height, merged with best audio
             format_spec = (
+                "bestvideo[height<={}][ext=mp4]+bestaudio[ext=m4a]/"
                 "bestvideo[height<={}]+bestaudio/"
-                "bestvideo+bestaudio/best".format(height)
+                "best[height<={}]/"
+                "bestvideo+bestaudio/best".format(height, height, height)
             )
         else:
-            format_spec = "bestvideo+bestaudio/best"
+            format_spec = (
+                "bestvideo[ext=mp4]+bestaudio[ext=m4a]/"
+                "bestvideo+bestaudio/best"
+            )
+
 
     job_id = uuid.uuid4().hex
     q = queue.Queue()
