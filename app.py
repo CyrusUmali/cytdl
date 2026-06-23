@@ -13,8 +13,16 @@ import yt_dlp
   
 import os
 
-COOKIES = "/etc/secrets/cookies.txt"
-cookie_opts = {"cookiefile": COOKIES} if os.path.exists(COOKIES) else {}
+import shutil
+
+_COOKIE_SRC = "/etc/secrets/cookies.txt"
+
+if os.path.exists(_COOKIE_SRC):
+    _COOKIE_COPY = os.path.join(tempfile.gettempdir(), "cookies.txt")
+    shutil.copy2(_COOKIE_SRC, _COOKIE_COPY)
+    cookie_opts = {"cookiefile": _COOKIE_COPY}
+else:
+    cookie_opts = {}
 
 
 app = Flask(__name__)
