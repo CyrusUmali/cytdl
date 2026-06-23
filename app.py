@@ -323,6 +323,24 @@ def stream():
     )
 
 
+
+
+
+@app.route("/debug-cookies")
+def debug_cookies():
+    import os, tempfile
+    cookie_path = os.path.join(tempfile.gettempdir(), "cookies.txt")
+    src_exists = os.path.exists("/etc/secrets/cookies.txt")
+    copy_exists = os.path.exists(cookie_path)
+    size = os.path.getsize(cookie_path) if copy_exists else 0
+    return jsonify({
+        "src_exists": src_exists,
+        "copy_exists": copy_exists,
+        "cookie_file_bytes": size,
+        "cookie_opts_populated": bool(cookie_opts),
+    })
+
+
 @app.route("/file/<job_id>")
 def serve_file(job_id: str):
     if not re.fullmatch(r"[0-9a-f]{32}", job_id):
