@@ -219,6 +219,8 @@ def info():
         "no_warnings": True,
         "noplaylist": True,
         "skip_download": True,
+        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+
         **cookie_opts,
     }
     try:
