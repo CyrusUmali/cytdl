@@ -10,11 +10,8 @@ from typing import Dict, List
 
 from flask import Flask, Response, render_template, request, send_file, jsonify
 import yt_dlp
+  
  
-import sys, traceback
-
-import threading as _threading
-import traceback
 
 
 app = Flask(__name__)
@@ -395,22 +392,5 @@ def debug_formats():
 
   
 
-def _log(msg):
-    print("[grab] " + str(msg), flush=True)
-
-def _start():
-    try:
-        from waitress import serve
-        serve(app, host="0.0.0.0", port=5000)
-    except Exception:
-        _log("CRASH in _start():\n" + traceback.format_exc())
-
 if __name__ == "__main__":
-    # Direct run on PC — use Flask dev server with auto-reload
     app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=True)
-else:
-    # Imported by Chaquopy — start waitress in background thread
-    _log("about to start server thread")
-    _t = _threading.Thread(target=_start, daemon=True)
-    _t.start()
-    _log("thread.start() called, ident=" + str(_t.ident))
