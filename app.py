@@ -11,7 +11,10 @@ from typing import Dict, List
 from flask import Flask, Response, render_template, request, send_file, jsonify
 import yt_dlp
   
- 
+import os
+
+COOKIES = "/etc/secrets/cookies.txt"
+cookie_opts = {"cookiefile": COOKIES} if os.path.exists(COOKIES) else {}
 
 
 app = Flask(__name__)
@@ -208,6 +211,7 @@ def info():
         "no_warnings": True,
         "noplaylist": True,
         "skip_download": True,
+        **cookie_opts,
     }
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -368,6 +372,7 @@ def debug_formats():
         "no_warnings": True,
         "noplaylist": True,
         "skip_download": True,
+        **cookie_opts,
     }
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
